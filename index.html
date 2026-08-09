@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project Tracker</title>
+  <meta name="description" content="Live project tracker — status, next steps, details and important dates." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8B%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root{
+      --bg:#f5f7fb; --panel:#ffffff; --text:#0f172a; --muted:#64748b;
+      --border:#e5e9f0; --accent:#4f46e5; --accent-soft:#eef2ff; --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.06);
+      --radius:14px;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1120; --panel:#111827; --text:#e5e7eb; --muted:#94a3b8;
+        --border:#1f2937; --accent:#818cf8; --accent-soft:#1e1b4b; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      background:var(--bg); color:var(--text);
+      font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:28px 20px 64px}
+    header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+    .title h1{margin:0;font-size:26px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+    .title p{margin:6px 0 0;color:var(--muted);font-size:14px}
+    .meta{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+    .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.15)}
+    .btn{
+      appearance:none;border:1px solid var(--border);background:var(--panel);color:var(--text);
+      padding:9px 14px;border-radius:10px;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+      transition:.15s ease;
+    }
+    .btn:hover{border-color:var(--accent);color:var(--accent)}
+    .btn:active{transform:translateY(1px)}
+    .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+    .search{flex:1;min-width:220px;position:relative}
+    .search input{
+      width:100%;padding:11px 14px 11px 38px;border-radius:11px;border:1px solid var(--border);
+      background:var(--panel);color:var(--text);font-size:14px;outline:none;transition:.15s;
+    }
+    .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+    .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+    .filters{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      border:1px solid var(--border);background:var(--panel);color:var(--muted);
+      padding:8px 13px;border-radius:999px;font-size:13px;cursor:pointer;transition:.15s;white-space:nowrap;
+    }
+    .chip:hover{color:var(--text)}
+    .chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    thead th{
+      text-align:left;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);
+      padding:14px 16px;border-bottom:1px solid var(--border);white-space:nowrap;background:transparent;
+    }
+    tbody td{padding:15px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+    tbody tr:last-child td{border-bottom:none}
+    tbody tr{transition:background .12s}
+    tbody tr:hover{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+    .pname{font-weight:600;font-size:15px}
+    .nextstep{max-width:260px}
+    .details{max-width:360px;color:var(--muted);white-space:pre-wrap}
+    .details a{color:var(--accent)}
+    .dates{white-space:nowrap;color:var(--text);font-variant-numeric:tabular-nums}
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:600;
+      border:1px solid transparent;white-space:nowrap;
+    }
+    .badge .bdot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.9}
+    .s-green{color:#15803d;background:#dcfce7;border-color:#bbf7d0}
+    .s-blue{color:#1d4ed8;background:#dbeafe;border-color:#bfdbfe}
+    .s-amber{color:#b45309;background:#fef3c7;border-color:#fde68a}
+    .s-red{color:#b91c1c;background:#fee2e2;border-color:#fecaca}
+    .s-gray{color:#475569;background:#f1f5f9;border-color:#e2e8f0}
+    @media (prefers-color-scheme: dark){
+      .s-green{color:#4ade80;background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25)}
+      .s-blue{color:#60a5fa;background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.25)}
+      .s-amber{color:#fbbf24;background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.25)}
+      .s-red{color:#f87171;background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.25)}
+      .s-gray{color:#cbd5e1;background:rgba(148,163,184,.12);border-color:rgba(148,163,184,.22)}
+    }
+    /* Mobile cards */
+    .cards{display:none}
+    @media (max-width:760px){
+      .desktop{display:none}
+      .cards{display:grid;gap:14px}
+      .pcard{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+      .pcard h3{margin:0 0 10px;font-size:16px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+      .row{display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--border);font-size:14px}
+      .row:first-of-type{border-top:none}
+      .row .k{color:var(--muted);min-width:96px;flex-shrink:0;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;padding-top:1px}
+      .row .v{flex:1}
+      .row .v.details{color:var(--text)}
+    }
+    .state{padding:56px 24px;text-align:center;color:var(--muted)}
+    .state h3{color:var(--text);margin:0 0 8px}
+    .state code{background:var(--accent-soft);color:var(--accent);padding:2px 7px;border-radius:6px;font-size:13px}
+    .state ol{text-align:left;max-width:460px;margin:16px auto 0;line-height:1.9}
+    .spinner{width:22px;height:22px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .footer{margin-top:22px;text-align:center;color:var(--muted);font-size:12.5px}
+    .footer a{color:var(--muted)}
+    .count{color:var(--muted);font-size:13px;margin-left:2px}
+    .spin-anim{animation:spin .8s linear infinite}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="title">
+        <h1>📋 Project Tracker</h1>
+        <p>Live view of all projects, statuses and next steps.</p>
+      </div>
+      <div class="meta">
+        <span class="dot" title="Live"></span>
+        <span id="updated">Loading…</span>
+        <button class="btn" id="refreshBtn" title="Refresh now">
+          <svg id="refreshIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <label class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="search" type="search" placeholder="Search projects, details, dates…" autocomplete="off" />
+      </label>
+      <div class="filters" id="filters"></div>
+    </div>
+
+    <div class="card">
+      <div id="content">
+        <div class="state"><span class="spinner"></span><p style="margin-top:14px">Loading projects…</p></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span id="footcount"></span> ·
+      <a id="editLink" href="#" target="_blank" rel="noopener">Edit the data</a> ·
+      Auto-refreshes every 60s
+    </div>
+  </div>
+
+  <script>
+    /* ======================= CONFIG ======================= */
+    // Google Sheet that powers this page. Edit the sheet -> page updates live.
+    const SHEET_ID = "1gFCCXv0fcYUguKR7_atG0V7eZYt7RZvH4wiGpy64_Ak";
+    const GID = "0"; // first tab
+    /* ===================================================== */
+
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
+    const EDIT_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+    document.getElementById("editLink").href = EDIT_URL;
+
+    // Preferred column order / display names (matched case-insensitively, loosely).
+    const COLUMNS = [
+      { keys:["name","project","project name"], label:"Name", cls:"pname" },
+      { keys:["status"], label:"Status", cls:"status" },
+      { keys:["next step","next steps","nextstep","next"], label:"Next Step", cls:"nextstep" },
+      { keys:["more details","details","description","notes"], label:"More Details", cls:"details" },
+      { keys:["important dates","dates","important date","date","deadline","due"], label:"Important Dates", cls:"dates" },
+    ];
+
+    let RAW = [];         // array of row objects keyed by header
+    let HEADERS = [];     // resolved column headers in display order
+    let activeFilter = "All";
+
+    /* ---------- Robust CSV parser (handles quotes, commas, newlines) ---------- */
+    function parseCSV(text){
+      const rows=[]; let row=[]; let field=""; let i=0; let inQ=false;
+      const pushField=()=>{row.push(field);field="";};
+      const pushRow=()=>{rows.push(row);row=[];};
+      while(i<text.length){
+        const c=text[i];
+        if(inQ){
+          if(c==='"'){
+            if(text[i+1]==='"'){field+='"';i+=2;continue;}
+            inQ=false;i++;continue;
+          }
+          field+=c;i++;continue;
+        }
+        if(c==='"'){inQ=true;i++;continue;}
+        if(c===','){pushField();i++;continue;}
+        if(c==='\r'){i++;continue;}
+        if(c==='\n'){pushField();pushRow();i++;continue;}
+        field+=c;i++;
+      }
+      // last field/row
+      if(field.length>0||row.length>0){pushField();pushRow();}
+      return rows.filter(r=>r.some(c=>c.trim()!==""));
+    }
+
+    function statusClass(status){
+      const s=(status||"").toLowerCase();
+      if(/(done|complete|finished|closed|shipped|live)/.test(s)) return "s-green";
+      if(/(in progress|in-progress|active|ongoing|started|doing|wip)/.test(s)) return "s-blue";
+      if(/(on hold|hold|paused|pending|waiting|later|backlog)/.test(s)) return "s-amber";
+      if(/(blocked|at risk|delayed|stuck|overdue|urgent)/.test(s)) return "s-red";
+      return "s-gray";
+    }
+
+    function esc(s){return (s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+    function linkify(s){
+      return esc(s).replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+    }
+
+    function resolveHeaders(rawHeaders){
+      // Map the sheet's actual headers to our display columns where possible; keep extras too.
+      const used=new Set();
+      const resolved=[];
+      for(const col of COLUMNS){
+        const idx=rawHeaders.findIndex((h,i)=>!used.has(i)&&col.keys.includes(h.trim().toLowerCase()));
+        if(idx>=0){used.add(idx);resolved.push({header:rawHeaders[idx],label:col.label,cls:col.cls});}
+      }
+      // Append any unrecognised columns so nothing is hidden
+      rawHeaders.forEach((h,i)=>{
+        if(!used.has(i)&&h.trim()!=="") resolved.push({header:h,label:h,cls:""});
+      });
+      return resolved;
+    }
+
+    function cellHTML(colcls,val){
+      if(colcls==="status"){
+        if(!val.trim()) return "";
+        return `<span class="badge ${statusClass(val)}"><span class="bdot"></span>${esc(val)}</span>`;
+      }
+      if(colcls==="details") return linkify(val);
+      if(colcls==="pname") return `<span class="pname">${esc(val)}</span>`;
+      return esc(val);
+    }
+
+    function render(){
+      const content=document.getElementById("content");
+      const q=document.getElementById("search").value.trim().toLowerCase();
+
+      let rows=RAW.filter(r=>{
+        const matchesText=!q||HEADERS.some(h=>(r[h.header]||"").toLowerCase().includes(q));
+        const statusCol=HEADERS.find(h=>h.cls==="status");
+        const matchesFilter=activeFilter==="All"||(statusCol&&(r[statusCol.header]||"").trim()===activeFilter);
+        return matchesText&&matchesFilter;
+      });
+
+      document.getElementById("footcount").textContent=`${RAW.length} project${RAW.length===1?"":"s"} total`;
+
+      if(rows.length===0){
+        content.innerHTML=`<div class="state"><h3>No matching projects</h3><p>Try a different search or filter.</p></div>`;
+        return;
+      }
+
+      // Desktop table
+      let t=`<div class="desktop"><table><thead><tr>`;
+      HEADERS.forEach(h=>t+=`<th>${esc(h.label)}</th>`);
+      t+=`</tr></thead><tbody>`;
+      rows.forEach(r=>{
+        t+="<tr>";
+        HEADERS.forEach(h=>t+=`<td class="${h.cls}">${cellHTML(h.cls,r[h.header]||"")}</td>`);
+        t+="</tr>";
+      });
+      t+=`</tbody></table></div>`;
+
+      // Mobile cards
+      let c=`<div class="cards">`;
+      rows.forEach(r=>{
+        const nameCol=HEADERS.find(h=>h.cls==="pname")||HEADERS[0];
+        const statusCol=HEADERS.find(h=>h.cls==="status");
+        c+=`<div class="pcard"><h3><span>${esc(r[nameCol.header]||"")}</span>`;
+        if(statusCol&&(r[statusCol.header]||"").trim()) c+=cellHTML("status",r[statusCol.header]);
+        c+=`</h3>`;
+        HEADERS.forEach(h=>{
+          if(h===nameCol||h===statusCol) return;
+          const v=r[h.header]||""; if(!v.trim()) return;
+          c+=`<div class="row"><div class="k">${esc(h.label)}</div><div class="v ${h.cls}">${cellHTML(h.cls,v)}</div></div>`;
+        });
+        c+=`</div>`;
+      });
+      c+=`</div>`;
+
+      content.innerHTML=t+c;
+    }
+
+    function buildFilters(){
+      const wrap=document.getElementById("filters");
+      const statusCol=HEADERS.find(h=>h.cls==="status");
+      if(!statusCol){wrap.innerHTML="";return;}
+      const statuses=[...new Set(RAW.map(r=>(r[statusCol.header]||"").trim()).filter(Boolean))];
+      const all=["All",...statuses];
+      wrap.innerHTML=all.map(s=>`<button class="chip${s===activeFilter?" active":""}" data-s="${esc(s)}">${esc(s)}</button>`).join("");
+      wrap.querySelectorAll(".chip").forEach(ch=>ch.onclick=()=>{activeFilter=ch.dataset.s;buildFilters();render();});
+    }
+
+    function showError(msg){
+      document.getElementById("content").innerHTML=`
+        <div class="state">
+          <h3>Couldn't load the data</h3>
+          <p>${esc(msg)}</p>
+          <p style="margin-top:18px">If this is the first time, make the Google Sheet viewable:</p>
+          <ol>
+            <li>Open the sheet (the <b>Edit the data</b> link below)</li>
+            <li>Click <b>Share</b> (top-right)</li>
+            <li>Under <i>General access</i>, choose <code>Anyone with the link</code> → <code>Viewer</code></li>
+            <li>Come back and hit <b>Refresh</b></li>
+          </ol>
+        </div>`;
+      document.getElementById("updated").textContent="Not loaded";
+    }
+
+    async function load(){
+      const icon=document.getElementById("refreshIcon");
+      icon.classList.add("spin-anim");
+      try{
+        const res=await fetch(CSV_URL+"&_="+Date.now(),{cache:"no-store"});
+        if(!res.ok) throw new Error("HTTP "+res.status);
+        const text=await res.text();
+        if(/<html/i.test(text)) throw new Error("The sheet isn't shared publicly yet.");
+        const table=parseCSV(text);
+        if(table.length<1) throw new Error("The sheet appears to be empty.");
+        const rawHeaders=table[0];
+        HEADERS=resolveHeaders(rawHeaders);
+        RAW=table.slice(1).map(cells=>{
+          const o={}; rawHeaders.forEach((h,i)=>o[h]=(cells[i]||"").trim()); return o;
+        });
+        buildFilters();
+        render();
+        const now=new Date();
+        document.getElementById("updated").textContent="Updated "+now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+      }catch(e){
+        showError(e.message||String(e));
+      }finally{
+        setTimeout(()=>icon.classList.remove("spin-anim"),400);
+      }
+    }
+
+    document.getElementById("refreshBtn").onclick=load;
+    document.getElementById("search").addEventListener("input",render);
+    load();
+    setInterval(load,60000); // auto-refresh
+  </script>
+</body>
+</html>
