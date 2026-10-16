@@ -1,51 +1,55 @@
 # 📋 Project Tracker
 
-A simple, public webpage that shows your projects live from a Google Sheet.
+An app-style, public project tracker that reads a Google Sheet **live**.
 Edit the sheet → the page updates within a minute. No code, no redeploy.
 
-**Columns:** Name · Status · Next Step · More Details · Important Dates
+**Live:** https://project-tracker-eight-gamma.vercel.app
+**Data:** https://docs.google.com/spreadsheets/d/1gFCCXv0fcYUguKR7_atG0V7eZYt7RZvH4wiGpy64_Ak/edit
 
-## How it works
+## Features
 
-- The page (`index.html`) reads a Google Sheet as CSV and renders it as a
-  searchable, filterable table (with color-coded status badges and a
-  mobile-friendly card layout).
-- Data source (your sheet):
-  https://docs.google.com/spreadsheets/d/1gFCCXv0fcYUguKR7_atG0V7eZYt7RZvH4wiGpy64_Ak/edit
+- **Three views:** Board (kanban by stage), Cards (illustrated), and List. Your choice is remembered.
+- **Hero dashboard:** greeting, live summary, a pipeline bar, and stat tiles (click any of them to filter).
+- **Illustrations:** a hand-drawn hero scene, plus unique generated cover art for every project.
+- **Detail drawer:** click a project to see its progress stepper, next step, details, dates and an "Edit in sheet" link to that row.
+- Search (⌘K or `/`), stage filters, sorting, dark/light mode, auto-refresh, and a mobile bottom nav.
 
-## ⚠️ One-time setup (make the sheet public to read)
+## Sheet columns
 
-The page can only show the data if the sheet is viewable by anyone with the link:
+The page matches columns by header name (case-insensitive). Column order doesn't matter.
 
-1. Open the sheet (link above).
-2. Click **Share** (top-right).
-3. Under **General access**, pick **Anyone with the link** → **Viewer**.
-4. Done. The page will load the data.
+| Column | Also accepted as | Used for |
+|---|---|---|
+| **Name** | Project, Title | Card title |
+| **Status** | Stage, State | Status pill and automatic stage grouping |
+| **Next Step** | Next, Action, To do | Highlighted "Next step" box |
+| **More Details** | Details, Notes, Description | Description |
+| **Important Dates** | Dates, Deadline, Due, Last update | Date chips with countdowns ("in 5 days") |
+| **Image** *(optional)* | Cover, Photo, Picture | Paste an image URL to use a real photo as the project's cover |
 
-> "Viewer" only lets people *read* through the link — only you (and anyone you
-> explicitly invite) can edit the sheet.
+Any other columns you add are shown in the project's detail drawer.
 
-## Updating the tracker
+## How statuses become stages
 
-Just edit the Google Sheet like any spreadsheet:
-- Add a row for a new project.
-- Change a **Status** cell (e.g. `In Progress`, `Blocked`, `Done`, `On Hold`,
-  `Not Started`) — the badge color updates automatically.
-- Paste data straight from Excel into the sheet if you prefer.
+You can write statuses however you like. The page groups them by keywords:
 
-The public page refreshes automatically every 60 seconds (or click **Refresh**).
-
-## Status colors
-
-| Status keywords | Color |
+| Stage | Matches words like |
 |---|---|
-| Done / Complete / Shipped / Live | 🟢 green |
-| In Progress / Active / Ongoing | 🔵 blue |
-| On Hold / Pending / Waiting | 🟡 amber |
-| Blocked / At Risk / Delayed / Overdue | 🔴 red |
-| Anything else (e.g. Not Started) | ⚪ gray |
+| 🟦 In progress | in progress, edit, draft, working, shared, ready, 95% |
+| 🟪 Submitted | submitted, under review, with editor, await, pending |
+| 🟩 Approved (teal) | approved, cleared |
+| ✅ Completed | published, presented, accepted, done, complete |
+| 🟧 On hold | standby, on hold, paused, away, rotation |
+| 🟥 Blocked | blocked, stuck, delayed, rejected |
+| ⬜ Backlog | not started, planned, anything else |
 
-## Changing the data source
+Project types (IRB, Case report, Abstract, Paper, Review, Letter…) are detected from the name and get their own icon.
 
-To point the page at a different sheet, edit the `SHEET_ID` (and `GID` for a
-different tab) in the `CONFIG` block near the bottom of `index.html`.
+## One-time setup
+
+The sheet must be readable by anyone with the link:
+**Share → General access → Anyone with the link → Viewer.** (Only you can edit.)
+
+## Customising
+
+Edit the `CONFIG` block near the bottom of `index.html` to change the sheet (`SHEET_ID`, `GID`), the page title, or the refresh interval.
