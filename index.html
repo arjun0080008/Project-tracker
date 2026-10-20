@@ -229,6 +229,11 @@
     .a-badge{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.02em;
       background:color-mix(in srgb,var(--k) 16%,transparent);color:var(--k);border:1px solid color-mix(in srgb,var(--k) 35%,transparent)}
     .award p{margin:9px 0 0;font-size:13px;line-height:1.45;color:rgba(255,255,255,.66);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .wins-team{display:flex;align-items:center;gap:10px;margin:24px 0 12px;font-weight:800;font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.82)}
+    .wins-head + .wins-team{margin-top:0}
+    .wins-team .i{color:var(--t)}
+    .wins-team b{font-size:11.5px;padding:1px 9px;border-radius:999px;background:rgba(255,255,255,.12);color:#fff;letter-spacing:0}
+    .wins-team::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.14)}
     .k-published{--k:#ffd166;--k2:#f4a51c}
     .k-presented{--k:#ff9fd6;--k2:#e3529f}
     .k-accepted {--k:#8fe3ff;--k2:#2e9bff}
@@ -278,6 +283,30 @@
     .chip b{font-weight:800;color:var(--faint)}
     .chip.active{background:var(--text);border-color:var(--text);color:var(--bg)}
     .chip.active b{color:inherit;opacity:.7}
+
+    /* ============================== TEAMS ============================== */
+    .teamtabs{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -2px 18px;padding:2px 2px 6px}
+    .teamtabs::-webkit-scrollbar{display:none}
+    .teamtabs:empty{display:none}
+    .tteam{display:inline-flex;align-items:center;gap:9px;height:46px;padding:0 14px;border-radius:15px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-weight:700;font-size:14px;white-space:nowrap;flex-shrink:0;box-shadow:var(--shadow-sm);transition:background .15s,color .15s,border-color .15s,box-shadow .15s}
+    .tteam .i{color:var(--t)}
+    .tteam b{font-size:12px;font-weight:800;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--faint)}
+    .tteam:hover{color:var(--text);border-color:color-mix(in srgb,var(--t) 45%,var(--border))}
+    .tteam.active{background:var(--t);border-color:var(--t);color:#fff;box-shadow:0 10px 22px -10px var(--t)}
+    .tteam.active .i{color:#fff}
+    .tteam.active b{background:rgba(255,255,255,.22);color:#fff}
+    .tdot{width:10px;height:10px;border-radius:4px;background:var(--t);flex-shrink:0;box-shadow:0 0 0 3px color-mix(in srgb,var(--t) 16%,transparent)}
+    .team-sec{margin-bottom:38px}
+    .team-sec:last-child{margin-bottom:0}
+    .team-head{display:flex;align-items:center;gap:14px;margin:0 0 16px;padding:14px 18px 14px 14px;border-radius:20px;
+      background:linear-gradient(90deg,color-mix(in srgb,var(--t) 14%,var(--surface)),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--t) 24%,var(--border))}
+    .team-ico{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:var(--t);color:#fff;box-shadow:0 10px 20px -10px var(--t);flex-shrink:0}
+    .team-txt{min-width:0}
+    .team-txt h3{margin:0;font-family:var(--display);font-size:22px;letter-spacing:-.02em;line-height:1.15}
+    .team-txt small{display:block;color:var(--muted);font-size:13px;font-weight:600;margin-top:2px}
+    .team-bar{margin-left:auto;display:flex;width:220px;height:9px;border-radius:999px;overflow:hidden;gap:2px;background:var(--surface-3);flex-shrink:0}
+    .team-bar i{background:var(--c);height:100%}
+    .team-chip{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:800;color:var(--t);background:color-mix(in srgb,var(--t) 13%,var(--surface))}
 
     /* ============================== COVER ART ============================== */
     .cover{
@@ -503,6 +532,11 @@
       .tools .select .i.chev{display:none}
       .tools .select .i:first-child{left:13px}
       .search .kbd{display:none}
+      .team-bar{display:none}
+      .teamtabs{flex-wrap:wrap;overflow:visible;gap:8px}
+      .tteam{height:40px;padding:0 12px;font-size:13.5px}
+      .team-txt h3{font-size:19px}
+      .team-ico{width:42px;height:42px;border-radius:13px}
       .wins{padding:22px 18px 18px}
       .wins-head{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:18px}
       .wins-art{width:128px;margin:-6px 0 0 -6px}
@@ -528,6 +562,11 @@
       <div>
         <div class="side-label">Views</div>
         <nav class="nav" id="sideViews"></nav>
+      </div>
+
+      <div id="sideTeamsWrap" hidden>
+        <div class="side-label">Teams</div>
+        <nav class="nav" id="sideTeams"></nav>
       </div>
 
       <div>
@@ -737,6 +776,7 @@
             </label>
           </div>
         </div>
+        <div class="teamtabs" id="teamTabs" role="tablist" aria-label="Filter by team"></div>
         <div class="chips" id="chips" role="tablist" aria-label="Filter by stage"></div>
         <div id="content"></div>
       </section>
@@ -760,6 +800,11 @@
     GID: "0",                 // tab id (first tab = 0)
     TITLE: "Project Tracker",
     REFRESH_MS: 60000,
+    // Teams. If the sheet has a "Team" column, its values are used instead.
+    RESEARCH_TEAM: "ISE Research Team",
+    PERSONAL_TEAM: "Personal",
+    // Projects whose names match any of these go to the research team; everything else is personal.
+    RESEARCH_PROJECTS: [/\birb\b/i, /igie case report/i, /gastric esd/i, /bile cf/i, /acg pancreas cyst/i, /foregut oncology/i],
   };
 
   const CSV_URL  = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&gid=${CONFIG.GID}`;
@@ -799,6 +844,7 @@
     columns:'<path d="M4 6h16M4 12h16M4 18h16"/>',
     check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
     party:'<path d="M5.8 11.3 2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.2.8a2.9 2.9 0 0 0-1.9 3.2c.1.9-.6 1.8-1.6 1.8H16"/><path d="m22 13-.8-.3a2.6 2.6 0 0 0-3.2 1.9 1.7 1.7 0 0 1-1.6 1.4H16M11 2l.3.8a2.6 2.6 0 0 1-1.9 3.2 1.7 1.7 0 0 0-1.4 1.6V8"/><path d="M11 13c1.9 1.9 2.8 4.1 2 4.9-.8.8-3-.1-4.9-2-1.9-1.9-2.8-4.1-2-4.9.8-.8 3 .1 4.9 2Z"/>',
+    user:'<circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>',
     users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 3.5a4 4 0 0 1 0 9M22 21a7 7 0 0 0-4.5-6.5"/>',
   };
   const icon = (n, s = 18) => `<svg class="i" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ICONS.sparkle}</svg>`;
@@ -818,6 +864,7 @@
     details: ["more details","details","description","notes","note","comments","info"],
     dates:   ["important dates","important date","dates","date","deadline","deadlines","due","due date","last update","last updated","updated","timeline"],
     image:   ["image","image url","cover","photo","picture","img","illustration"],
+    team:    ["team","group","research team","owner team"],
   };
 
   const STAGES = {
@@ -974,7 +1021,7 @@
   const state = {
     rows: [], headers: [], roles: {}, extras: [],
     view: store.get("pt-view", "cards"),
-    stage: "all", q: "", sort: store.get("pt-sort", "sheet"),
+    stage: "all", team: "all", q: "", sort: store.get("pt-sort", "sheet"),
     lastText: null, syncedAt: null, loaded: false, error: null,
   };
   const VIEWS = [
@@ -1010,11 +1057,12 @@
         datesRaw: get(cells, "dates"), image: get(cells, "image"),
         extras: extras.map(x => ({label: x.h, value: (cells[x.i] || "").trim()})).filter(x => x.value),
       };
+      p.team = get(cells, "team") || (CONFIG.RESEARCH_PROJECTS.some(re => re.test(name)) ? CONFIG.RESEARCH_TEAM : CONFIG.PERSONAL_TEAM);
       p.stage = classify(status);
       p.win = p.stage === "done" ? winKind(status) : null;
       p.type = detectType(name);
       p.dates = parseDates(p.datesRaw);
-      p.search = [name, status, p.next, p.details, p.datesRaw, ...p.extras.map(x => x.value), p.type?.label, STAGES[p.stage].label].join(" ").toLowerCase();
+      p.search = [name, status, p.team, p.next, p.details, p.datesRaw, ...p.extras.map(x => x.value), p.type?.label, STAGES[p.stage].label].join(" ").toLowerCase();
       rows.push(p);
     });
     state.headers = headers; state.roles = roles; state.extras = extras; state.rows = rows;
@@ -1027,9 +1075,40 @@
     return c;
   }
 
+  /* ---------------- teams ---------------- */
+  function teamList(){
+    const rank = t => t === CONFIG.RESEARCH_TEAM ? 0 : t === CONFIG.PERSONAL_TEAM ? 2 : 1;
+    return [...new Set(state.rows.map(r => r.team))].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+  }
+  const TEAM_COLORS = ["#2e8bff","#0fb5a6","#f59f0b","#16b364"];
+  function teamColor(t){
+    if (t === CONFIG.RESEARCH_TEAM) return "#6a45ff";
+    if (t === CONFIG.PERSONAL_TEAM) return "#e3529f";
+    return TEAM_COLORS[hashStr(t) % TEAM_COLORS.length];
+  }
+  const teamIcon = t => t === CONFIG.PERSONAL_TEAM ? "user" : "users";
+  function renderTeams(){
+    const teams = teamList(), n = t => state.rows.filter(r => r.team === t).length;
+    const multi = teams.length > 1;
+    if (!multi) state.team = "all";
+    const tab = (key, label, count, ic, color) => `<button class="tteam ${state.team === key ? "active" : ""}" data-team="${esc(key)}" role="tab" aria-selected="${state.team === key}" style="--t:${color}">${icon(ic,17)}<span>${esc(label)}</span><b>${count}</b></button>`;
+    $("#teamTabs").innerHTML = multi ? tab("all", "All projects", state.rows.length, "layers", "var(--primary)") + teams.map(t => tab(t, t, n(t), teamIcon(t), teamColor(t))).join("") : "";
+    $("#sideTeamsWrap").hidden = !multi;
+    $("#sideTeams").innerHTML = multi ? teams.map(t => `<button class="nav-item ${state.team === t ? "active" : ""}" data-team="${esc(t)}" style="--t:${teamColor(t)}"><span class="tdot"></span>${esc(t)}<span class="count">${n(t)}</span></button>`).join("") : "";
+  }
+  function teamHead(t, rows){
+    const done = rows.filter(r => r.stage === "done").length;
+    const by = STAGE_ORDER.map(k => [k, rows.filter(r => r.stage === k).length]).filter(([, c]) => c);
+    return `<div class="team-head reveal" style="--t:${teamColor(t)}">
+      <span class="team-ico">${icon(teamIcon(t),22)}</span>
+      <div class="team-txt"><h3>${esc(t)}</h3><small>${rows.length} project${rows.length === 1 ? "" : "s"}${done ? ` · ${done} ${esc(STAGES.done.label.toLowerCase())}` : ""}</small></div>
+      <div class="team-bar" title="${by.map(([k, c]) => `${STAGES[k].label}: ${c}`).join(" · ")}">${by.map(([k, c]) => `<i class="st-${k}" style="flex-grow:${c}"></i>`).join("")}</div>
+    </div>`;
+  }
+
   function visibleRows(){
     const q = state.q.trim().toLowerCase();
-    let rows = state.rows.filter(r => (state.stage === "all" || r.stage === state.stage) && (!q || q.split(/\s+/).every(t => r.search.includes(t))));
+    let rows = state.rows.filter(r => (state.stage === "all" || r.stage === state.stage) && (state.team === "all" || r.team === state.team) && (!q || q.split(/\s+/).every(t => r.search.includes(t))));
     if (state.sort === "name") rows = [...rows].sort((a, b) => a.name.localeCompare(b.name));
     if (state.sort === "stage") rows = [...rows].sort((a, b) => STAGE_ORDER.indexOf(a.stage) - STAGE_ORDER.indexOf(b.stage) || a.id - b.id);
     return rows;
@@ -1146,16 +1225,25 @@
           <div class="wins-counts">${counts.map(([k, n]) => `<div class="wcount k-${k}"><b>${n}</b><span>${WIN_KINDS[k].label}</span></div>`).join("")}</div>
         </div>
       </div>
-      <div class="wins-grid">${sorted.map((p, i) => `
+      ${(() => {
+        const teams = teamList().filter(t => sorted.some(w => w.team === t));
+        const grid = ws => `<div class="wins-grid">${ws.map(award).join("")}</div>`;
+        return teams.length > 1
+          ? teams.map(t => { const ws = sorted.filter(w => w.team === t); return `<div class="wins-team" style="--t:${teamColor(t)}">${icon(teamIcon(t),16)}${esc(t)}<b>${ws.length}</b></div>${grid(ws)}`; }).join("")
+          : grid(sorted);
+      })()}`;
+  }
+  function award(p, i){
+    return `
         <article class="award k-${p.win} reveal" style="--i:${Math.min(i, 12)}" tabindex="0" role="button" data-open="${p.id}" aria-label="${esc(p.name)} — ${esc(p.status)}">
-          <span class="medal">${medalSVG(p.win, i)}</span>
+          <span class="medal">${medalSVG(p.win, p.id)}</span>
           <div style="min-width:0">
             <span class="a-type">${esc(p.type ? p.type.label : WIN_KINDS[p.win].label)}</span>
             <h3>${esc(p.name)}</h3>
             <span class="a-badge">${icon(WIN_KINDS[p.win].icon,13)}${esc(p.status)}</span>
             ${p.details ? `<p>${esc(p.details)}</p>` : ""}
           </div>
-        </article>`).join("")}</div>`;
+        </article>`;
   }
 
   /* ---------------- render: views ---------------- */
@@ -1184,10 +1272,10 @@
       </article>`).join("")}</div>`;
   }
 
-  function boardView(rows){
+  function boardView(rows, hideEmpty){
     const groups = Object.fromEntries(STAGE_ORDER.map(k => [k, []]));
     rows.forEach(r => groups[r.stage].push(r));
-    const cols = STAGE_ORDER.filter(k => groups[k].length || (STAGES[k].step && state.stage === "all"));
+    const cols = STAGE_ORDER.filter(k => groups[k].length || (!hideEmpty && STAGES[k].step && state.stage === "all"));
     if (state.stage !== "all") cols.splice(0, cols.length, state.stage);
     return `<div class="board">${cols.map((k, ci) => `
       <div class="col st-${k} reveal" style="--i:${ci}">
@@ -1251,17 +1339,24 @@
     }
     const rows = visibleRows();
     $("#countLbl").textContent = rows.length === state.rows.length ? `${rows.length}` : `${rows.length} of ${state.rows.length}`;
-    $("#secSub").textContent = state.stage === "all" ? "Tap any project for the full picture." : `Showing ${STAGES[state.stage].label.toLowerCase()} — ${STAGES[state.stage].blurb}.`;
+    const bits = [];
+    if (state.team !== "all") bits.push(state.team);
+    if (state.stage !== "all") bits.push(`${STAGES[state.stage].label.toLowerCase()} — ${STAGES[state.stage].blurb}`);
+    $("#secSub").textContent = bits.length ? `Showing ${bits.join(" · ")}.` : "Grouped by team — tap any project for the full picture.";
     if (!rows.length){
       el.innerHTML = `<div class="state">${ILL_EMPTY}<h3>No projects match</h3><p>Try a different search or stage filter.</p><div style="margin-top:18px"><button class="btn primary" data-clear>${icon("x",16)}Clear filters</button></div></div>`;
       return;
     }
     el.classList.toggle("anim", !!animate);
-    el.innerHTML = state.view === "board" ? boardView(rows) : state.view === "list" ? listView(rows) : cardsView(rows);
+    const teams = teamList(), grouped = state.team === "all" && teams.length > 1;
+    const view = rs => state.view === "board" ? boardView(rs, grouped) : state.view === "list" ? listView(rs) : cardsView(rs);
+    el.innerHTML = grouped
+      ? teams.map(t => { const rs = rows.filter(r => r.team === t); return rs.length ? `<section class="team-sec" aria-label="${esc(t)}">${teamHead(t, rs)}${view(rs)}</section>` : ""; }).join("")
+      : view(rows);
   }
 
   function renderAll(animate){
-    renderViews(); renderFilters(); renderHero(); renderWins(); renderStats(); renderContent(animate);
+    renderViews(); renderTeams(); renderFilters(); renderHero(); renderWins(); renderStats(); renderContent(animate);
     $("#stats").classList.toggle("anim", !!animate);
     $("#wins").classList.toggle("anim", !!animate);
   }
@@ -1285,7 +1380,7 @@
       <button class="btn icon-btn glass d-close" data-close aria-label="Close">${icon("x")}</button>
       <div class="d-scroll">
         <div><span class="ptype">${esc(p.type ? p.type.label : st.label)}</span><h2 id="dTitle">${esc(p.name)}</h2></div>
-        <div class="d-status"><span class="pill"><span>${esc(p.status || st.label)}</span></span>${p.status ? `<span style="color:var(--muted);font-size:13px;font-weight:600">Stage · ${st.label}</span>` : ""}</div>
+        <div class="d-status"><span class="pill"><span>${esc(p.status || st.label)}</span></span><span class="team-chip" style="--t:${teamColor(p.team)}">${icon(teamIcon(p.team),14)}${esc(p.team)}</span>${p.status ? `<span style="color:var(--muted);font-size:13px;font-weight:600">Stage · ${st.label}</span>` : ""}</div>
         ${stepper}
         ${p.next ? `<div class="d-sec hl"><h5>${icon("arrow",14)}Next step</h5><p>${linkify(p.next)}</p></div>` : p.stage === "done" ? `<div class="d-sec hl"><h5>${icon("party",14)}All wrapped up</h5><p>Nothing left to do on this one 🎉</p></div>` : ""}
         ${p.details ? `<div class="d-sec"><h5>${icon("note",14)}More details</h5><p>${linkify(p.details)}</p></div>` : ""}
@@ -1355,17 +1450,19 @@
 
   /* ---------------- events ---------------- */
   function setView(v){ if (state.view === v) return; state.view = v; store.set("pt-view", v); renderViews(); renderContent(true); }
+  function setTeam(t){ state.team = state.team === t && t !== "all" ? "all" : t; renderTeams(); renderContent(true); }
   function setStage(s){ state.stage = state.stage === s && s !== "all" ? "all" : s; renderFilters(); renderContent(true); }
 
   document.addEventListener("click", e => {
-    const t = e.target.closest("[data-view],[data-stage],[data-open],[data-close],[data-retry],[data-clear]");
+    const t = e.target.closest("[data-view],[data-team],[data-stage],[data-open],[data-close],[data-retry],[data-clear]");
     if (!t) return;
     if (t.dataset.view) setView(t.dataset.view);
+    else if (t.dataset.team) setTeam(t.dataset.team);
     else if (t.dataset.stage) { setStage(t.dataset.stage); if (t.closest(".hero,.stats")) $("#projHead").scrollIntoView({behavior:"smooth", block:"start"}); }
     else if (t.dataset.open !== undefined) openDrawer(t.dataset.open);
     else if (t.hasAttribute("data-close")) closeDrawer();
     else if (t.hasAttribute("data-retry")) load(true);
-    else if (t.hasAttribute("data-clear")) { state.q = ""; $("#q").value = ""; state.stage = "all"; renderFilters(); renderContent(true); }
+    else if (t.hasAttribute("data-clear")) { state.q = ""; $("#q").value = ""; state.stage = "all"; state.team = "all"; renderTeams(); renderFilters(); renderContent(true); }
   });
   document.addEventListener("keydown", e => {
     if ((e.key === "Enter" || e.key === " ") && e.target.matches("[role=button][data-open]")) { e.preventDefault(); openDrawer(e.target.dataset.open); }

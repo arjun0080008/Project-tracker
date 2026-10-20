@@ -26,8 +26,17 @@ The page matches columns by header name (case-insensitive). Column order doesn't
 | **More Details** | Details, Notes, Description | Description |
 | **Important Dates** | Dates, Deadline, Due, Last update | Date chips with countdowns ("in 5 days") |
 | **Image** *(optional)* | Cover, Photo, Picture | Paste an image URL to use a real photo as the project's cover |
+| **Team** *(optional)* | Group | Which team a project belongs to (see below) |
 
 Any other columns you add are shown in the project's detail drawer.
+
+## Teams
+
+Projects are grouped into **ISE Research Team** and **Personal**, with tabs to switch between them. The Hall of Fame is split the same way.
+
+- Without a `Team` column, a project goes to the research team if its name contains "IRB" or matches one of: IGIE Case report, Gastric ESD, Bile CF DNA, ACG Pancreas Cyst, Foregut oncology. Everything else is Personal.
+- Add a `Team` column to the sheet to control it yourself. Whatever you type there wins, and you can create new teams just by typing a new name.
+- The team names and the matching list are in the `CONFIG` block of `index.html` (`RESEARCH_TEAM`, `PERSONAL_TEAM`, `RESEARCH_PROJECTS`).
 
 ## How statuses become stages
 
