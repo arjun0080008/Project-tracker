@@ -887,7 +887,8 @@
     const s = (status || "").toLowerCase().trim();
     if (!s) return "other";
     if (/block|stuck|delay|overdue|at risk|reject|declin|cancel|problem|issue/.test(s)) return "blocked";
-    if (/publish|present|accepted|\bdone\b|complete|finish|shipped|closed|launched|\blive\b/.test(s)) return "done";
+    // "done" counts only as the whole status ("Done", "All done"), not "edits done"
+    if (/publish|present|accepted|^(all )?done\b|complete|finish|shipped|closed|launched|\blive\b/.test(s)) return "done";
     if (/submit|under review|in review|with editor|editor|await|waiting|pending|\bsent\b/.test(s)) return "submitted";
     if (/approv|cleared|granted/.test(s)) return "approved";
     if (/hold|standby|stand by|pause|\baway\b|later|backlog|parked|rotation|not started|planned|idea/.test(s)) return s.includes("not started") || s.includes("planned") || s.includes("idea") ? "other" : "hold";
