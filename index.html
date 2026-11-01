@@ -58,6 +58,7 @@
     .st-hold     {--c:#f59f0b}
     .st-blocked  {--c:#f0483e}
     .st-other    {--c:#8a8fa8}
+    .st-closed   {--c:#6b7280}
     .st-primary  {--c:var(--primary)}
     [class*="st-"]{--c-soft:color-mix(in srgb,var(--c) 12%,var(--surface));--c-ink:color-mix(in srgb,var(--c) 78%,var(--text))}
 
@@ -808,7 +809,7 @@
     RESEARCH_TEAM: "ISE Research Team",
     PERSONAL_TEAM: "Personal",
     // Projects whose names match any of these go to the research team; everything else is personal.
-    RESEARCH_PROJECTS: [/\birb\b/i, /igie case report/i, /gastric esd/i, /bile cf/i, /acg pancreas cyst/i, /foregut oncology/i],
+    RESEARCH_PROJECTS: [/\birb\b/i, /igie case report/i, /gastric esd/i, /bile cf/i, /acg pancreas cyst/i, /foregut oncology/i, /ercp retrospective/i, /colorectal endoscopy/i],
   };
 
   const CSV_URL  = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&gid=${CONFIG.GID}`;
@@ -879,20 +880,24 @@
     hold:      {label:"On hold",     icon:"pause",  step:0, blurb:"paused for now"},
     blocked:   {label:"Blocked",     icon:"alert",  step:0, blurb:"needs attention"},
     other:     {label:"Backlog",     icon:"inbox",  step:0, blurb:"not started / other"},
+    closed:    {label:"Closed",      icon:"x",      step:0, blurb:"cancelled or closed"},
   };
-  const STAGE_ORDER = ["progress","submitted","approved","done","hold","blocked","other"];
+  const STAGE_ORDER = ["progress","submitted","approved","done","hold","blocked","other","closed"];
   const STEP_LABELS = ["In progress","Submitted","Approved","Completed"];
 
   function classify(status){
     const s = (status || "").toLowerCase().trim();
     if (!s) return "other";
-    if (/block|stuck|delay|overdue|at risk|reject|declin|cancel|problem|issue/.test(s)) return "blocked";
+    if (/cancel|abandon|dropped|^closed\b/.test(s)) return "closed";
+    if (/not (yet )?started|not begun/.test(s)) return "other";
+    if (/not (yet )?submitted/.test(s)) return "progress";
+    if (/block|stuck|delay|overdue|at risk|reject|declin|problem|issue/.test(s)) return "blocked";
     // "done" counts only as the whole status ("Done", "All done"), not "edits done"
-    if (/publish|present|accepted|^(all )?done\b|complete|finish|shipped|closed|launched|\blive\b/.test(s)) return "done";
-    if (/submit|under review|in review|with editor|editor|await|waiting|pending|\bsent\b/.test(s)) return "submitted";
+    if (/publish|present|accepted|^(all )?done\b|complete|finish|shipped|launched|\blive\b/.test(s)) return "done";
+    if (/submit|under review|in review|with editor|editor|await|waiting|pending|\bsent\b|\bon [^,]{1,40}'s side/.test(s)) return "submitted";
     if (/approv|cleared|granted/.test(s)) return "approved";
     if (/hold|standby|stand by|pause|\baway\b|later|backlog|parked|rotation|not started|planned|idea/.test(s)) return s.includes("not started") || s.includes("planned") || s.includes("idea") ? "other" : "hold";
-    if (/progress|edit|draft|ready|working|writing|shared|wip|active|ongoing|start|analy|collect|revis|\d+\s*%/.test(s)) return "progress";
+    if (/progress|edit|draft|ready|working|writing|shared|wip|active|ongoing|start|analy|collect|revis|push|\d+\s*%/.test(s)) return "progress";
     return "other";
   }
 
